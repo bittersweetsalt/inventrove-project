@@ -1,0 +1,61 @@
+-- Inserting sample data into Categories table
+INSERT INTO Categories (name, description) VALUES
+    ('Electronics', 'Electronic devices and accessories'),
+    ('Clothing', 'Apparel and fashion accessories'),
+    ('Books', 'Books and literature');
+
+-- Inserting sample data into OrderStatuses table
+INSERT INTO OrderStatuses (name) VALUES
+    ('Pending'),
+    ('Processing'),
+    ('Shipped'),
+    ('Delivered');
+
+-- Inserting sample data into Products table
+INSERT INTO Products (name, description, category_id, price, stock)
+VALUES
+    ('Smartphone', 'High-performance smartphone', 1, 999.99, 100),
+    ('T-shirt', 'Casual cotton t-shirt', 2, 19.99, 200),
+    ('Laptop', 'Thin and lightweight laptop', 1, 1499.99, 50);
+
+-- Inserting sample data into Customers table
+INSERT INTO Customers (email, first_name, last_name, shipping_address, billing_address, phone_number)
+VALUES
+    ('john@example.com', 'John', 'Doe', '123 Main St, City, Country', '123 Main St, City, Country', '+1234567890'),
+    ('jane@example.com', 'Jane', 'Doe', '456 Elm St, City, Country', '456 Elm St, City, Country', '+0987654321');
+
+-- Inserting sample data into Orders table
+INSERT INTO Orders (customer_id, order_date, order_status_id, total_price)
+VALUES
+    (1, CURRENT_TIMESTAMP, 1, 999.99),
+    (2, CURRENT_TIMESTAMP, 2, 19.99);
+
+-- Inserting sample data into OrderItems table
+INSERT INTO OrderItems (order_id, product_id, quantity, price)
+VALUES
+    (1, 1, 1, 999.99),
+    (2, 2, 2, 19.99);
+
+-- Inserting sample data into Sellers table
+INSERT INTO Sellers (seller_name, email, phone_number, shipping_address, billing_address)
+VALUES
+    ('Electronics Emporium', 'electronics@example.com', '+1234567890', '789 Oak St, City, Country', '789 Oak St, City, Country'),
+    ('Fashion Hub', 'fashion@example.com', '+0987654321', '456 Pine St, City, Country', '456 Pine St, City, Country');
+
+-- Inserting sample data into Buyers table
+INSERT INTO Buyers (buyer_name, email, phone_number, shipping_address, billing_address)
+VALUES
+    ('Tech Enthusiast', 'tech@example.com', '+1111111111', '321 Maple St, City, Country', '321 Maple St, City, Country'),
+    ('Fashionista', 'fashionista@example.com', '+2222222222', '654 Birch St, City, Country', '654 Birch St, City, Country');
+
+-- Inserting sample data into Inventory table
+INSERT INTO Inventory (product_id, seller_id, quantity, price, comments)
+VALUES
+    (1, 1, 50, 999.99, 'Limited stock, hurry up!'),
+    (2, 2, 100, 19.99, NULL);
+
+-- Inserting sample data into Transactions table
+INSERT INTO Transactions (order_id, buyer_id, seller_id, transaction_date, amount)
+VALUES
+    (1, 1, 1, CURRENT_TIMESTAMP, 999.99),
+    (2, 2, 2, CURRENT_TIMESTAMP, 19.99);

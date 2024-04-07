@@ -1,0 +1,13 @@
+[
+    { "name": "John Doe", "email": "john.doe@example.com", "phone_number": "(555) 555-1234" },
+    { "name": "Jane Smith", "email": "jane.smith@example.com", "phone_number": "(555) 555-5678" },
+    { "name": "Michael Brown", "email": "michael.brown@example.com", "phone_number": "(555) 555-9012" },
+    { "name": "Sarah Lee", "email": "sarah.lee@example.com", "phone_number": "(555) 555-3456" },
+    { "name": "David Miller", "email": "david.miller@example.com", "phone_number": "(555) 555-7890" },
+    { "name": "Emily Garcia", "email": "emily.garcia@example.com", "phone_number": "(555) 555-2134" },
+    { "name": "Matthew Johnson", "email": "matthew.johnson@example.com", "phone_number": "(555) 555-6578" },
+    { "name": "Jennifer Davis", "email": "jennifer.davis@example.com", "phone_number": "(555) 555-0912" },
+    { "name": "Andrew Wilson", "email": "andrew.wilson@example.com", "phone_number": "(555) 555-4356" },
+    { "name": "Amanda Hernandez", "email": "amanda.hernandez@example.com", "phone_number": "(555) 555-8790" }
+  ]
+  

@@ -1,0 +1,12 @@
+[
+    { "item_id": 1, "seller_id": 1, "buyer_id": 2, "quantity": 1, "transaction_type": "Purchase" },
+    { "item_id": 2, "seller_id": 3, "buyer_id": 4, "quantity": 2, "transaction_type": "Purchase" },
+    { "item_id": 3, "seller_id": 5, "buyer_id": 1, "quantity": 1, "transaction_type": "Purchase" },
+    { "item_id": 4, "seller_id": 2, "buyer_id": 3, "quantity": 3, "transaction_type": "Purchase" },
+    { "item_id": 5, "seller_id": 7, "buyer_id": 5, "quantity": 1, "transaction_type": "Purchase" },
+    { "item_id": 1, "seller_id": 1, "buyer_id": 8, "quantity": 2, "transaction_type": "Purchase" },
+    { "item_id": 6, "seller_id": 4, "buyer_id": 6, "quantity": 1, "transaction_type": "Purchase" },
+    { "item_id": 7, "seller_id": 8, "buyer_id": 9, "quantity": 1, "transaction_type": "Purchase" },
+    { "item_id": 8, "seller_id": 9, "buyer_id": 7, "quantity": 2, "transaction_type": "Purchase" },
+    { "item_id": 2, "seller_id": 2, "buyer_id": 10, "quantity": 1, "transaction_type": "Purchase" }
+  ]

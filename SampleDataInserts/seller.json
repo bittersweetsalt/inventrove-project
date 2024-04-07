@@ -1,0 +1,13 @@
+[
+    { "name": "Cozy Comfort", "email": "cozycomfort@store.com", "phone_number": "(888) 888-1234" },
+    { "name": "Tech Gadgets", "email": "techgadgets@store.com", "phone_number": "(888) 888-5678" },
+    { "name": "Green Thumbs", "email": "greentumbs@store.com", "phone_number": "(888) 888-9012" },
+    { "name": "Fashion Avenue", "email": "fashionavenue@store.com", "phone_number": "(888) 888-3456" },
+    { "name": "Bookworms Paradise", "email": "bookwormsparadise@store.com", "phone_number": "(888) 888-7890" },
+    { "name": "Art & Crafts Emporium", "email": "artncrafts@store.com", "phone_number": "(888) 888-2134" },
+    { "name": "Sports HQ", "email": "sportshq@store.com", "phone_number": "(888) 888-6578" },
+    { "name": "Music Mania", "email": "musicmania@store.com", "phone_number": "(888) 888-0912" },
+    { "name": "Toybox Wonderland", "email": "toyboxwonderland@store.com", "phone_number": "(888) 888-4356" },
+    { "name": "Party Supplies Galore", "email": "partysupplies@store.com", "phone_number": "(888) 888-8790" }
+  ]
+  

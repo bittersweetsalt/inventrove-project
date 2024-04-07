@@ -1,0 +1,9 @@
+3.12.24
+Currently added generated provider - Need to research what does that do?
+Need to test database connection tomorrow.
+
+Common commands:
+1. npm install prisma
+2. npx prisma init
+3. needs to configure the schema
+4. npx prisma generate

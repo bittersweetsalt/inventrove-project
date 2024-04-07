@@ -1,0 +1,131 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the data model for Categories table
+model categories {
+  category_id Int        @id @default(autoincrement())
+  name        String
+  description String?
+  products    products[]
+}
+
+// Define the data model for OrderStatuses table
+model orderstatuses {
+  order_status_id Int      @id @default(autoincrement())
+  name            String
+  orders          orders[]
+}
+
+// Define the data model for Products table
+model products {
+  product_id   Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  category     categories     @relation(fields: [category_id], references: [category_id])
+  category_id  Int
+  price        Float
+  weight       Float?
+  dimensions   String?
+  stock        Int
+  orderitems   orderitems[]
+  inventorylog inventorylog[]
+}
+
+// Define the data model for Customers table
+model customers {
+  customer_id      Int      @id @default(autoincrement())
+  email            String   @unique
+  first_name       String
+  last_name        String
+  shipping_address String?
+  billing_address  String?
+  phone_number     String?
+  orders           orders[]
+}
+
+// Define the data model for Orders table
+model orders {
+  order_id        Int            @id @default(autoincrement())
+  customer        customers      @relation(fields: [customer_id], references: [customer_id])
+  customer_id     Int
+  order_date      DateTime       @default(now())
+  order_status    orderstatuses  @relation(fields: [order_status_id], references: [order_status_id])
+  order_status_id Int
+  total_price     Float
+  orderitems      orderitems[]
+  shipping        shipping[]
+  transactions    transactions[]
+}
+
+// Define the data model for OrderItems table
+model orderitems {
+  order_item_id Int      @id @default(autoincrement())
+  order         orders   @relation(fields: [order_id], references: [order_id])
+  order_id      Int
+  product       products @relation(fields: [product_id], references: [product_id])
+  product_id    Int
+  quantity      Int
+  price         Float
+}
+
+// Define the data model for Shipping table
+model shipping {
+  shipping_id             Int       @id @default(autoincrement())
+  order                   orders    @relation(fields: [order_id], references: [order_id])
+  order_id                Int
+  tracking_number         String?
+  shipped_date            DateTime?
+  estimated_delivery_date DateTime?
+}
+
+// Define the data model for InventoryLog table
+model inventorylog {
+  inventory_log_id Int      @id @default(autoincrement())
+  product          products @relation(fields: [product_id], references: [product_id])
+  product_id       Int
+  quantity         Int
+  reason           String?
+  logged_at        DateTime @default(now())
+}
+
+// Define the data model for Sellers table
+model sellers {
+  seller_id        Int            @id @default(autoincrement())
+  seller_name      String
+  email            String         @unique
+  phone_number     String?
+  shipping_address String?
+  billing_address  String?
+  transactions     transactions[]
+}
+
+// Define the data model for Buyers table
+model buyers {
+  buyer_id         Int            @id @default(autoincrement())
+  buyer_name       String
+  email            String         @unique
+  phone_number     String?
+  shipping_address String?
+  billing_address  String?
+  transactions     transactions[]
+}
+
+// Define the data model for Transactions table
+model transactions {
+  transaction_id   Int      @id @default(autoincrement())
+  order            orders   @relation(fields: [order_id], references: [order_id])
+  order_id         Int
+  buyer            buyers   @relation(fields: [buyer_id], references: [buyer_id])
+  buyer_id         Int
+  seller           sellers  @relation(fields: [seller_id], references: [seller_id])
+  seller_id        Int
+  transaction_date DateTime @default(now())
+  amount           Float
+}

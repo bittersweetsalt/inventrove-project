@@ -1,0 +1,39 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Buyer {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  email     String   @unique
+  phone_number String
+}
+
+model Seller {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  email     String   @unique
+  phone_number String
+}
+
+model Item {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  unit_price  Decimal  @default(0.00)
+  stock_quantity Int
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  item        Item    @relation(fields: [itemId], references: [id])
+  itemId      Int
+  seller      Seller  @relation(fields: [sellerId], references: [id])
+  sellerId    Int
+  buyer       Buyer    @relation(fields: [buyerId], references: [id])
+  buyerId     Int
+  quantity     Int
+  transaction_type String
+  transaction_date DateTime @default(now())
+}

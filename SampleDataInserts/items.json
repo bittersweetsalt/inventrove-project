@@ -1,0 +1,12 @@
+[
+    { "name": "Cozy Blanket", "description": "Super soft and warm blanket", "unit_price": 29.99, "stock_quantity": 10 },
+    { "name": "Wireless Headphones", "description": "Noise-cancelling headphones with long battery life", "unit_price": 79.99, "stock_quantity": 5 },
+    { "name":  "Gardening Tools Set", "description": "High-quality tools for all your gardening needs", "unit_price": 39.99, "stock_quantity": 15 },
+    { "name": "Designer Dress", "description": "Elegant dress perfect for any occasion", "unit_price": 129.99, "stock_quantity": 3 },
+    { "name": "Classic Literature Collection", "description": "Set of 5 popular classic novels", "unit_price": 49.99, "stock_quantity": 8 },
+    { "name": "Paint and Brushes Set", "description": "Complete set for unleashing your inner artist", "unit_price": 19.99, "stock_quantity": 12 },
+    { "name": "Soccer Ball", "description": "Official size soccer ball for all skill levels", "unit_price": 14.99, "stock_quantity": 10 },
+    { "name": "Wireless Speaker", "description": "Portable speaker with clear sound", "unit_price": 49.99, "stock_quantity": 7 },
+    { "name": "Stuffed Animal", "description": "Adorable and cuddly stuffed animal", "unit_price": 19.99, "stock_quantity": 20 },
+    { "name": "Party Decorations Kit", "description": "All you need to throw a fun and festive party", "unit_price": 24.99, "stock_quantity": 8 }
+  ]

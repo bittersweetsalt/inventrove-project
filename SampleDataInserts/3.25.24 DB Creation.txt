@@ -1,0 +1,101 @@
+
+CREATE TABLE Categories (
+ category_id SERIAL PRIMARY KEY,
+ name VARCHAR(255) NOT NULL,
+ description TEXT DEFAULT NULL
+);
+
+CREATE TABLE Buyers (
+    buyer_id SERIAL PRIMARY KEY,
+    buyer_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone_number VARCHAR(20) DEFAULT NULL,
+    shipping_address TEXT,
+    billing_address TEXT
+);
+
+CREATE TABLE Sellers (
+    seller_id SERIAL PRIMARY KEY,
+    seller_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone_number VARCHAR(20) DEFAULT NULL,
+    shipping_address TEXT,
+    billing_address TEXT
+);
+
+CREATE TABLE Products (
+ product_id SERIAL PRIMARY KEY,
+ name VARCHAR(255) NOT NULL,
+ description TEXT,
+ category_id INT REFERENCES Categories(category_id),
+ price DECIMAL(10,2) NOT NULL,
+ weight DECIMAL(10,2) DEFAULT NULL,
+ dimensions VARCHAR(50) DEFAULT NULL,
+ stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Customers (
+ customer_id SERIAL PRIMARY KEY,
+ email VARCHAR(255) UNIQUE NOT NULL,
+ first_name VARCHAR(255) NOT NULL,
+ last_name VARCHAR(255) NOT NULL,
+ shipping_address TEXT,
+ billing_address TEXT,
+ phone_number VARCHAR(20) DEFAULT NULL
+);
+
+CREATE TABLE Inventory (
+    inventory_id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL REFERENCES Products(product_id),
+    seller_id INT NOT NULL REFERENCES Sellers(seller_id),
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    comments TEXT
+);
+
+CREATE TABLE OrderStatuses (
+ order_status_id SERIAL PRIMARY KEY,
+ name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Orders (
+ order_id SERIAL PRIMARY KEY,
+ customer_id INT NOT NULL REFERENCES Customers(customer_id),
+ order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ order_status_id INT NOT NULL REFERENCES OrderStatuses(order_status_id),
+ total_price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE Transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL REFERENCES Orders(order_id),
+    buyer_id INT NOT NULL REFERENCES Buyers(buyer_id),
+    seller_id INT NOT NULL REFERENCES Sellers(seller_id),
+    transaction_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE OrderItems (
+ order_item_id SERIAL PRIMARY KEY,
+ order_id INT NOT NULL REFERENCES Orders(order_id),
+ product_id INT NOT NULL REFERENCES Products(product_id),
+ quantity INT NOT NULL,
+ price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE Shipping (
+ shipping_id SERIAL PRIMARY KEY,
+ order_id INT NOT NULL REFERENCES Orders(order_id),
+ tracking_number VARCHAR(255) DEFAULT NULL,
+ shipped_date TIMESTAMP DEFAULT NULL,
+ estimated_delivery_date TIMESTAMP DEFAULT NULL
+);
+
+CREATE TABLE InventoryLog (
+ inventory_log_id SERIAL PRIMARY KEY,
+ product_id INT NOT NULL REFERENCES Products(product_id),
+ quantity INT,
+ reason VARCHAR(255),
+ logged_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
