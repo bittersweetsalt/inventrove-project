@@ -29,21 +29,6 @@ function ResponsiveDrawer(props) {
 
   const router = useRouter();
 
-  // const handleDrawerClose = () => {
-  //   setIsClosing(true);
-  //   setMobileOpen(false);
-  // };
-
-  // const handleDrawerTransitionEnd = () => {
-  //   setIsClosing(false);
-  // };
-
-  // const handleDrawerToggle = () => {
-  //   if (!isClosing) {
-  //     setMobileOpen(!mobileOpen);
-  //   }
-  // };
-
   const clickSiteLink = (routing_link) => {
     const routing_str = routing_link.replaceAll(' ','');
     router.push(`/${routing_str}`);

@@ -13,7 +13,6 @@ const array_list = [
     "Transactions", "Sellers", "Buyers", "Customers", "Orders"
 ]
 
-
 export default function Orders(){
     
     const [value, setValue] = useState(0); // State to manage the selected tab index

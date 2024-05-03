@@ -15,7 +15,7 @@ export default function Layout({ children }) {
                 <SideBar></SideBar>
             </Box>
             
-            <Box bgcolor="#e7e7fe">
+            <Box bgcolor="#c2c2ff">
                 <SearchAppBar></SearchAppBar>
                 {children}
             </Box>

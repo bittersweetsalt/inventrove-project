@@ -1,37 +1,38 @@
-import { Box, Card, Grid, Tabs, Tab, Typography } from "@mui/material";
-import InventoryModule from "./Inventory";
+import { Box, Paper, Button, Card, Grid, Tabs, Tab, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import Layout from "../../PagesComponent/layout";
-import ProductList from "./ProductList";
-
-const array_list = [
-    "Product List", "Add Products", "Edit Products"
-]
+import ProductAdd from "./ProductAdd/ProductAdd";
+import ProductEdit from "./ProductEdit/ProductEdit";
+import ProductList from "./ProductList/ProductList";
 
 export default function Inventory(){
     
     const [value, setValue] = useState(0); // State to manage the selected tab index
 
     // Function to handle tab change
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
+    const addItem = (event, newValue) => {
+      setValue(1);
     };
 
-    // useEffect(() => {
-    //     console.log(value);
+    function backToProductList(){
+        console.log("Back Button Pressed")
+        setValue(0);
+    };
 
-    // },[value]);
+    useEffect(() => {
+        console.log(value);
+
+    },[value]);
+
     let content;
 
     if (value == 0){
-        content = <ProductList></ProductList>
+        content = <ProductList backToProductList={backToProductList}></ProductList>
     }
-    // else if (value == 1){
-    //     content = <SellerList></SellerList>
-    // }
-    // else if (value == 2){
-    //     content = <BuyerList></BuyerList>
-    // }
+    else if (value == 1){
+        content = <ProductAdd backToProductList={backToProductList} ></ProductAdd>
+    }
+    
     // else if (value == 3){
     //     content = <CustomerList></CustomerList>
     // }
@@ -43,15 +44,30 @@ export default function Inventory(){
         <Box>
             <Layout>
                 <Box sx={{ width: '100%' }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                            {array_list.map((item, index) =>(
-                                <Tab key={index} label={item}/>
-                            ))}         
-                        </Tabs>
-                    </Box>
+                    <Grid
+                        container
+                    >
+                        <Grid
+                            item
+                            container
+                            justifyContent={"right"}
+                        >
+                            <Paper>
+                                <Button onClick={addItem}>
+                                    Add Item
+                                </Button>
+                            </Paper>
+                            
+                        </Grid>
+                        <Grid
+                            item
+                            xs={12}
+                        >
+                            {content}
+                        </Grid>
+                    </Grid>
+                    
                 </Box>
-                {content}
             </Layout>
         </Box>       
     )
