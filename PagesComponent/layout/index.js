@@ -15,7 +15,7 @@ export default function Layout({ children }) {
                 <SideBar></SideBar>
             </Box>
             
-            <Box bgcolor="#c2c2ff">
+            <Box bgcolor="#c2c2ff" sx={{ width: '100%', height: "100%", minHeight: '100vh' }}>
                 <SearchAppBar></SearchAppBar>
                 {children}
             </Box>

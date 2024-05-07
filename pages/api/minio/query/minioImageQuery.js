@@ -46,4 +46,4 @@ function streamToBuffer(stream) {
       stream.on('error', reject);
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     });
-  }
+}

@@ -3,8 +3,8 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Card, Box, Paper, Divider, CardMedia, CardContent, Typography, Link, Button, Grid } from '@mui/material';
-import Image from 'next/image';
 import Layout from '../../../PagesComponent/layout';
+import ImageProductBlobCarousel from './imageCarousel';
 
 const PostPage = ({ }) => {
     const router = useRouter();
@@ -13,7 +13,6 @@ const PostPage = ({ }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const [imageUrl, setImageUrl] = useState();
     const [blobUrls, setBlobUrls] = useState([]);
 
     useEffect(() => {
@@ -32,7 +31,6 @@ const PostPage = ({ }) => {
                 });
                 const data = await response.json();
                 setPostData(data);
-                console.log(postData);
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -67,18 +65,14 @@ const PostPage = ({ }) => {
                         });
                         return response.blob();
                     });
-                    
-                    // console.log(promises);
                     // Wait for all promises to resolve
                     const responses = await Promise.all(promises);
 
-
+                    // Resolve all blobs and adding them into blobUrls hook
                     const blobs = responses.map(response => new Blob([response], { type: 'image/jpeg' }));
                     const configuredBlobUrls = blobs.map(blob => URL.createObjectURL(blob));
-
-                    console.log(configuredBlobUrls)
                     setBlobUrls(configuredBlobUrls);
-                   
+                    console.log(blobUrls)
                 } catch (error) {
                 console.error('An error occurred:', error);
                 }
@@ -98,7 +92,6 @@ const PostPage = ({ }) => {
         router.push("/Inventory")
     }
 
-
     return (
         <Box>
             <Layout>
@@ -106,72 +99,25 @@ const PostPage = ({ }) => {
                     isLoading ? (
                         <div></div>
                     ): (
-                    <Grid container  spacing={2} justifyContent="center" alignItems="center" style={{ height: '90vh' }}>
-                        <Grid item xs={10} sm={10} md={10} >
+                    <Grid container spacing={2} justifyContent="center" alignItems="center" direction="">
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Card 
                                 sx={{
                                     p:2,
-                                    borderRadius:2
                                 }}
                             >  
-                                <Grid container> 
-                                    <Grid item xs={8}>
-                                        <CardContent>
-                                        <Box
-                                            elevation={0}
-                                            sx={{
-                                                // height: '20vh',
-                                                border: 2,
-                                                borderColor: 'primary.main'
-                                            }}
-                                            display="flex"
-                                            flexDirection="column"
-                                            alignItems={"center"}
-                                            justifyContent={'center'}
-                                            borderRadius='8px'
-                                        >
-                                            <Card>
-                                            {blobUrls && blobUrls.map((url, index) => (
-                                                    <CardMedia
-                                                        key={index}
-                                                        component="img"
-                                                        height="150"
-                                                        image={url}
-                                                        alt={index}
-                                                        title={"titleasdasdsada"}
-                                                        sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                                                    />                                                     
-                                                ))
-                                            }
-                                            {/* {blobUrls && 
-                                            <CardMedia
-                                                component="img"
-                                                height="500"
-                                                image={blobUrls[0]}
-                                                alt={"alt"}
-                                                title={"titleasdasdsada"}
-                                                sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                                            />  
-                                                
-                                            } */}
-
-                                            {/* {imageUrl && 
-                                            <CardMedia
-                                                component="img"
-                                                height="500"
-                                                image={imageUrl}
-                                                alt={"alt"}
-                                                title={"titleasdasdsada"}
-                                                sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                                            />    } */}
-                                            </Card>
-                                        </Box>
-                                        </CardContent>
-                                    </Grid>
-                                    <Grid item xs={6}>
+                                <Grid container > 
+                                    <Grid item xs="auto" sm="auto" md="auto" lg="auto" xl="auto">
+                                        {blobUrls ?
+                                            <ImageProductBlobCarousel image_blobs={blobUrls}/> : <div>
+                                                Loading Images
+                                            </div>
+                                        }
+                                    </Grid>       
+                                    <Grid item xs="auto" sm="auto" md="auto" lg="auto" xl="auto">
                                         <CardContent>
                                             <Grid container>
-                                                <Grid item xs={6}>
+                                                <Grid item xs={2} sm={2} md={4} lg={6} xl={6}>
                                                     <Typography variant="body2" color="textSecondary" component="div" fontSize="12px">
                                                         Category ID:
                                                     </Typography>
@@ -179,7 +125,7 @@ const PostPage = ({ }) => {
                                                         {postData.category_id}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid item xs={3} sm={4} md={4} lg={6} xl={6}>
                                                     <Typography variant="body2" color="textSecondary" component="div" fontSize="12px">
                                                         Item Name:
                                                     </Typography>
@@ -187,7 +133,7 @@ const PostPage = ({ }) => {
                                                         {postData.name}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid item xs={2} sm={2} md={4} lg={6} xl={6}>
                                                     <Typography variant="body2" color="textSecondary" component="div" fontSize="12px">
                                                         Price:
                                                     </Typography>
@@ -195,7 +141,7 @@ const PostPage = ({ }) => {
                                                         ${postData.price}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                                <Grid item xs={2} sm={2} md={4} lg={6} xl={6}>
                                                     <Typography variant="body2" color="textSecondary" component="div" fontSize="12px">
                                                         Stock:
                                                     </Typography>
@@ -203,7 +149,7 @@ const PostPage = ({ }) => {
                                                         {postData.stock}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item xs={12} sx={{}}>
+                                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                                     <Typography variant="body2" color="textSecondary" component="div" fontSize="12px">
                                                         Description:
                                                     </Typography>
@@ -212,16 +158,15 @@ const PostPage = ({ }) => {
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
-                                        </CardContent>
-                                        <Grid container justifyContent="right">
-                                            <Grid item>
-                                            <Button onClick={backToProductList} variant="outlined" color="primary">
-                                                Back
-                                            </Button>
-                                            </Grid>
-                                        </Grid>
-                                        
+                                        </CardContent>     
                                     </Grid>    
+                                    <Grid container justifyContent="right">
+                                        <Grid item>
+                                        <Button onClick={backToProductList} variant="outlined" color="primary">
+                                            Back
+                                        </Button>
+                                        </Grid>
+                                    </Grid>        
                                 </Grid>
                             </Card>    
                         </Grid>
