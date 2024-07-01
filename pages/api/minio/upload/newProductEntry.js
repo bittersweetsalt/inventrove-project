@@ -1,6 +1,8 @@
 import multer from 'multer';
-// import minioClient from '../../utils/minioClient'; // Configure Minio client instance
 import * as Minio from 'minio';
+
+// Adds all images sent from ProductAdd //
+// Creates a new pathname which Minio creates new Directory for Minio Insertions
 
 const upload = multer({ dest: '/tmp' }); // Configure temporary storage for uploaded files
 
@@ -13,42 +15,115 @@ const minioClient = new Minio.Client({
   });
 
 export const config = {
-  api: {
-    bodyParser: false, // Disables bodyParser for multer to handle form data
-  },
+    api: {
+        bodyParser: false, // Disables bodyParser for multer to handle form data
+    },
 };
 
 export default async function handler(req, res) {
-  try {
-    await upload.single('image')(req, res, async (err) => {
-      if (err) {
-        console.error('Error parsing form data:', err);
+    try {
+        if (req.method === 'POST') {
+            await upload.array('images')(req, res, async (err) => {
+                if (err) {
+                    console.error('Error parsing form data:', err);
+                    return res.status(500).json({ message: 'Error uploading image' });
+                }
+
+                // Fetch the newest directory path
+                const newest_dir_path = await fetchObjects();
+
+                // Submission of images to Minio
+                const image_promises = req.files.map(async (element) => {
+                    const filePath = element.path;
+                    const bucketName = 'projectimages';
+                    const objectName = newest_dir_path.toString() + '/' + element.originalname;
+
+                    const minio_result = await minioClient.fPutObject(bucketName, objectName, filePath);
+                    return minio_result
+                });
+
+                const final = await Promise.all(image_promises);
+                console.log(final);
+                // Send the response
+                return res.status(200).json({ message: 'Image uploaded successfully', productNumber: newest_dir_path });
+            });
+        }
+    } catch (err) {
+        console.error('Error uploading image:', err);
         return res.status(500).json({ message: 'Error uploading image' });
-      }
-
-      const uploadedFile = req.file;
-      const originalFilename = uploadedFile.originalname;
-
-      // Validate file type (optional)
-      const allowedMimeTypes = ['image/jpeg', 'image/png'];
-      if (!allowedMimeTypes.includes(uploadedFile.mimetype)) {
-        return res.status(400).json({ message: 'Invalid image format' });
-      }
-
-      // You don't directly create a new file here, but process the uploaded one
-
-      // Upload the image to Minio (or other processing)
-      const filePath = uploadedFile.path;
-      const bucketName = 'projectimages';
-      const objectName = originalFilename; // Create a unique filename
-
-      await minioClient.putObject(bucketName, objectName, filePath);
-      console.log('Image uploaded successfully!');
-
-      return res.status(200).json({ message: 'Image uploaded successfully' });
-    });
-  } catch (err) {
-    console.error('Error uploading image:', err);
-    return res.status(500).json({ message: 'Error uploading image' });
-  }
+    }
 }
+
+async function fetchObjects() {
+    const data = [];
+    try {
+        const stream = minioClient.listObjects('projectimages', '', true);
+        stream.on('data', (obj) => data.push(obj));
+        await new Promise((resolve) => stream.on('end', resolve));
+
+        // Sort the array and find the newest path
+        data.sort((a, b) => parseInt(b.name.split("/")[0]) - parseInt(a.name.split("/")[0]));
+        const newest_dir_path = parseInt(data[0].name.split("/")[0]) + 1;
+
+        return newest_dir_path;
+    } catch (err) {
+        console.error('Error fetching objects:', err);
+        throw err; // Propagate the error
+    }
+}
+
+
+// export default async function handler(req, res) {
+//     try {
+//         if (req.method === 'POST') {
+//             await upload.array('images')(req, res, async (err) => {
+//                 if (err) {
+//                     console.error('Error parsing form data:', err);
+//                     return res.status(500).json({ message: 'Error uploading image' });
+//                 }          
+                
+//                 // Fetches Minio list of objects.
+//                 // returns the largest inventory number.
+//                 // responses the new product
+//                 async function fetchObjects() {
+//                     const data = [];
+//                     try {
+//                         let newest_dir_path; // Declare it outside the function
+
+//                         const stream = minioClient.listObjects('projectimages', '', true);
+//                         stream.on('data', (obj) => data.push(obj));
+//                         await new Promise((resolve) => stream.on('end', resolve));
+
+//                         // Sort the array and find the newest path
+//                         data.sort((a, b) => parseInt(b.name.split("/")[0]) - parseInt(a.name.split("/")[0]));
+//                         newest_dir_path = parseInt(data[0].name.split("/")[0]) + 1; // Remove 'const' here
+
+//                         return newest_dir_path;
+//                     } catch (err) {
+//                         console.error('Error fetching objects:', err);
+//                     }
+//                 }
+//                 const newest_dir_path = await fetchObjects()
+
+//                 // Submission of images to Minio
+//                 const image_promises = req.files.map(async (element) => {
+                    
+//                     const filePath = element.path;
+//                     const bucketName = 'projectimages';
+//                     const objectName = newest_dir_path.toString() + '/'+ element.originalname; // Create a unique filename
+
+//                     await minioClient.putObject(bucketName, objectName, filePath);
+
+//                 });
+
+//                 await Promise.all(image_promises);
+
+//                 return res.status(200).json({ message: 'Image uploaded successfully', productNumber: newest_dir_path });
+//             });
+//         }
+//     } catch (err) {
+//         console.error('Error uploading image:', err);
+//         return res.status(500).json({ message: 'Error uploading image' });
+//     }
+
+// }

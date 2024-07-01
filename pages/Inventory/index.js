@@ -2,8 +2,8 @@ import { Box, Paper, Button, Card, Grid, Tabs, Tab, Typography } from "@mui/mate
 import { useState, useEffect } from "react";
 import Layout from "../../PagesComponent/layout";
 import ProductAdd from "./ProductAdd/ProductAdd";
-import ProductEdit from "./ProductEdit/ProductEdit";
-import ProductList from "./ProductList/ProductList";
+import ProductList from "./ProductList/productList";
+
 
 export default function Inventory(){
     
@@ -20,7 +20,7 @@ export default function Inventory(){
     };
 
     useEffect(() => {
-        console.log(value);
+        console.log("Inventory Page - and value: ", value);
 
     },[value]);
 
@@ -65,6 +65,9 @@ export default function Inventory(){
                         >
                             {content}
                         </Grid>
+                        {/* <Grid>
+                            <ImageSubTest></ImageSubTest>
+                        </Grid> */}
                     </Grid>
                     
                 </Box>

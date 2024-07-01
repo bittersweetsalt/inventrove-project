@@ -1,9 +1,10 @@
-import { Paper, TextField, Box, Card, Grid, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, SimpleDialog, List, ListItem, ListItemText, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
+import { Paper, Input, TextField, Box, Card, Grid, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Button, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
 import { useRouter } from 'next/router';
 import { useEffect } from "react";
 // import { createTheme } from "@mui/material/styles";
 import { ThemeProvider, createTheme } from '@mui/system';
 import React, { useState } from "react";
+import Timer from "../../../PagesComponent/timer/timer";
 
 export default function ProductAdd( {backToProductList} ){
 
@@ -15,23 +16,34 @@ export default function ProductAdd( {backToProductList} ){
         category_id: '',
         price: '',      
         stock: '',
+        image_path: ''
     });
     const [open, setOpen] = useState(false);
     const [errors, setErrors] = useState({});
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [redirectTimer, setRedirectTimer] = useState(5);
     const [errorResponse, setResponseErrors] = useState(false);
     const [errorResponseText, setErrorResponseText] = useState();
     const [postReady, setPostReady] = useState(false);
 
     // File Uploader
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFiles] = useState([]);
 
    
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        // setSelectedFile([...selectedFile, event.target.files[0]]);
+        if (event.target.files) {
+            // Create an array from the file list
+            const fileArray = Array.from(event.target.files);
+            console.log(event.target.files[0])
+            // Update the state to include the new files
+            setSelectedFiles(prevFiles => [...prevFiles, ...fileArray]);
+        }
     };
 
     const handleNewEntrySubmit = async (event) => {
         event.preventDefault();
+        
         for (const value in errors) {
             if(errors[value] == true){
                 setPostReady(false);
@@ -45,24 +57,59 @@ export default function ProductAdd( {backToProductList} ){
         if(postReady){
             if (!selectedFile) return;
 
-            // Send the selected file to your Next.js API route for upload
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-            formData.append('formData', formInputData);
-
-            const response = await fetch('/api/minio/upload/newProductEntry', {
-                method: 'POST',
-                body: formData,
-            });
-
-            // const data = await response.json();
-            // Handle success or error messages from the API route
-            if(response.status == 200){
-                handleClose();
-            }
-            if(response.status != 200){
-                handleErrorResponseOpen();
-                setErrorResponseText("Error: Status " + response.status + " - " + response.statusText);
+            try {
+                const formData = new FormData();
+                selectedFile.forEach((imageFile) => {
+                  formData.append(`images`, imageFile);
+                });
+                
+                const response = await fetch('/api/minio/upload/newProductEntry', {
+                  method: 'POST',
+                  body: formData,
+                });
+              
+                if (!response.ok) {
+                  throw new Error('Minio Network response was not ok');
+                }
+              
+                const data = await response.json();
+                
+                setFormData({
+                  ...formInputData,
+                  image_path: data.productNumber,
+                });
+              
+                const insert_payload = {
+                  name: formInputData.name,
+                  description: formInputData.description,
+                  category_id: parseInt(formInputData.category_id),
+                  price: parseInt(formInputData.price),
+                  stock: parseInt(formInputData.stock),
+                  image_path: data.productNumber.toString(),
+                };
+              
+                const response_postresql = await fetch('/api/inventory/create', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(insert_payload),
+                });
+              
+                await response_postresql.json();
+                if (response_postresql.status === 200) {
+                  console.log('Item Created successfully');
+                  // set the success page
+                  handleSubmissionResponseOpen();
+                //   backToProductList();
+                } else {
+                  console.error('Failed to create Item');
+                  handleErrorResponseOpen();
+                  setErrorResponseText("Error: Status " + response_postresql.status + " - " + response_postresql.statusText);
+                }
+            } catch (error) {
+                console.error('An error occurred:', error);
+                // Handle the error as needed (e.g., show an error message to the user)
             }
         }       
     };
@@ -124,6 +171,25 @@ export default function ProductAdd( {backToProductList} ){
         setErrorResponseText('')
     };
 
+    const handleSubmissionResponseOpen = () =>{
+        setSubmitSuccess(true);
+    };
+
+    const handleSubmissionResponseClose = (event, reason) =>{
+        if (reason && reason === "backdropClick") 
+            return;
+        setSubmitSuccess(false);        
+
+        myCloseModal();
+    };
+
+    const handleDropDown = (e) =>{
+        setFormData({
+            ...formInputData,
+            [e.target.name]: e.target.value 
+        });
+    };
+
 
     const validateStrings = (value) => {
         const strings = /^[a-zA-Z0-9_.-]+$/; // Allows letters, numbers, ., -, and _
@@ -151,7 +217,7 @@ export default function ProductAdd( {backToProductList} ){
                         p:2,
                         borderRadius:2
                     }}
-                >                        
+                >                   
                     <Box sx={{ '& > :not(style)': { marginBottom: 2 } }}>
                         <Grid
                             container
@@ -170,17 +236,42 @@ export default function ProductAdd( {backToProductList} ){
                                     }}
                                     display="flex"
                                     flexDirection="column"
-                                    alignItems={"center"}
-                                    justifyContent={'center'}
+                                    alignItems="center"
+                                    justifyContent='center'
                                     borderRadius='8px'
-                                >
+                                    >
                                     <Typography>
                                         Upload Image
                                     </Typography>
-                                    
-                                        <input type="file" name="image" onChange={handleFileChange} />
-                                        <Button >Upload Image</Button>
-                                    
+
+                                    {selectedFile && selectedFile.length > 0 ? (
+                                        selectedFile.map((file, index) => (
+                                        <Typography key={index}>
+                                            {file.name}
+                                        </Typography>
+                                        ))
+                                    ) : (
+                                        <Typography>No files selected.</Typography>
+                                    )}
+
+                                        {/* <label htmlFor="raised-button-file">
+                                            <Input
+                                                accept="image/*"
+                                                style={{ display: 'block' }}
+                                                id="raised-button-file"
+                                                multiple
+                                                type="file"
+                                                name="image"
+                                                onChange={handleFileChange}
+                                            />
+                                                <Button variant="contained" component="span">
+                                                    Upload
+                                                </Button>
+                                        </label> */}
+                                        <form >
+                                            <input type="file" multiple onChange={handleFileChange} />
+                                            <button type="submit">Upload</button>
+                                        </form>     
                                     </Box>
                             </Grid>
                             <Grid
@@ -203,17 +294,24 @@ export default function ProductAdd( {backToProductList} ){
                                 item  
                                 xs={8}  
                             >
-                                <TextField
-                                    id="outlined-required"
-                                    name="category_id"
-                                    label="Category ID"
-                                    rows={4}
-                                    value={formInputData.category_id}
-                                    onChange={handleStringVali_Insert}
-                                    error={errors.category_id} 
-                                    required
-                                    fullWidth
-                                />
+                                <Box sx={{ minWidth: 120 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Category ID</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            name="category_id"
+                                            value={formInputData.category_id}
+                                            required
+                                            label="Category ID"
+                                            onChange={handleDropDown}
+                                            >
+                                            <MenuItem value={1}>Electronics</MenuItem>
+                                            <MenuItem value={2}>Household Items</MenuItem>
+                                            <MenuItem value={3}>Car Parts</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
                             </Grid>                                                                                                  
 
                             <Grid
@@ -313,7 +411,7 @@ export default function ProductAdd( {backToProductList} ){
                     { 
                         errorResponse ? (
                             <Dialog
-                                open={open}
+                                open={errorResponse}
                                 onClose={handleErrorResponseClose}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
@@ -330,6 +428,25 @@ export default function ProductAdd( {backToProductList} ){
                                 {/* <Button onClick={handleConfirmation} type="submit" variant="contained" color="primary" autoFocus>Submit</Button> */}
                                 <Button onClick={handleClose}>Close</Button>
                                 </DialogActions>
+                            </Dialog>
+                        ) : (
+                            <div></div>
+                        )
+                    }
+                    { 
+                        submitSuccess ? (
+                            <Dialog
+                                open={submitSuccess}
+                                onClose={handleSubmissionResponseClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">
+                                    {"Product Successfully Created"}
+                                </DialogTitle>
+                                <DialogContent>
+                                    <Timer propFunctions={backToProductList} message={"Page will redirect itself to the previous page in "}></Timer>
+                                </DialogContent>
                             </Dialog>
                         ) : (
                             <div></div>

@@ -34,6 +34,7 @@ model products {
   weight       Float?
   dimensions   String?
   stock        Int
+  minio_image_path String?
   orderitems   orderitems[]
   inventorylog inventorylog[]
 }

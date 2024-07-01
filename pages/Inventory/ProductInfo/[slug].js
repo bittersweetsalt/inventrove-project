@@ -8,7 +8,7 @@ import ImageProductBlobCarousel from './imageCarousel';
 
 const PostPage = ({ }) => {
     const router = useRouter();
-    const { product_id, name, description, category_id, price, stock } = router.query;
+    const { product_id, name, description, category_id, price, stock, minio_image_path } = router.query;
     const [postData, setPostData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -42,7 +42,8 @@ const PostPage = ({ }) => {
 
     useEffect(() =>{
         const query_payload = {
-            query_id: product_id
+            query_id: product_id,
+            minio_image_path: minio_image_path
         }
         const fetchImageData = async () => {
             try {
@@ -65,6 +66,7 @@ const PostPage = ({ }) => {
                         });
                         return response.blob();
                     });
+                    
                     // Wait for all promises to resolve
                     const responses = await Promise.all(promises);
 
@@ -99,7 +101,7 @@ const PostPage = ({ }) => {
                     isLoading ? (
                         <div></div>
                     ): (
-                    <Grid container spacing={2} justifyContent="center" alignItems="center" direction="">
+                    <Grid container spacing={2} justifyContent="center" alignItems="center" >
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Card 
                                 sx={{
@@ -114,7 +116,7 @@ const PostPage = ({ }) => {
                                             </div>
                                         }
                                     </Grid>       
-                                    <Grid item xs="auto" sm="auto" md="auto" lg="auto" xl="auto">
+                                    <Grid item xs="auto" sm="auto" md="auto" lg="auto" xl="auto" sx={{ backgroundColor: '#f5f5f5', padding: 2 }}>
                                         <CardContent>
                                             <Grid container>
                                                 <Grid item xs={2} sm={2} md={4} lg={6} xl={6}>
@@ -162,9 +164,9 @@ const PostPage = ({ }) => {
                                     </Grid>    
                                     <Grid container justifyContent="right">
                                         <Grid item>
-                                        <Button onClick={backToProductList} variant="outlined" color="primary">
-                                            Back
-                                        </Button>
+                                            <Button onClick={backToProductList} variant="outlined" color="primary">
+                                                Back
+                                            </Button>
                                         </Grid>
                                     </Grid>        
                                 </Grid>

@@ -46,6 +46,10 @@ export default function ProductList( {  backToProductList } ){
 
     const handleRowClick = () =>{
         router.push({pathname: `Inventory/ProductInfo/${rowData.product_id}.js`, query: rowData});
+    }  
+    
+    const handleEditClick = () =>{
+        router.push({pathname: `Inventory/ProductEdit/${rowData.product_id}.js`, query: rowData});
     }   
 
     const handleClick = (row) => (event) => {
@@ -118,7 +122,7 @@ export default function ProductList( {  backToProductList } ){
                 >
                     {/* <MenuItem onClick={() => router.push({pathname: `Inventory/ProductInfo/${data.product_id}.js`, query: data.product_id})}>More Info</MenuItem> */}
                     <MenuItem onClick={handleRowClick}>More Info</MenuItem>
-                    <MenuItem onClick={handleClose}>Edit</MenuItem>
+                    <MenuItem onClick={handleEditClick}>Edit</MenuItem>
                     <MenuItem onClick={handleClose}>Delete</MenuItem>
                 </Menu>
         </Paper>

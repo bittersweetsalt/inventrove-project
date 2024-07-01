@@ -13,7 +13,7 @@ export default async function streamMultipleObjects(req, res) {
     try {
         const objectsList = await new Promise((resolve, reject) => {
             const objects = [];
-            const stream = minioClient.listObjects('projectimages', req.body.query_id, true);
+            const stream = minioClient.listObjects('projectimages', req.body.minio_image_path, true);
             stream.on('data', obj => objects.push(obj));
             stream.on('end', () => resolve(objects));
             stream.on('error', reject);
