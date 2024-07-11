@@ -1,9 +1,31 @@
 import { Paper, Box, Menu, MenuItem, Card, Grid, List, ListItem, ListItemText, Typography, Button, TablePagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
 import { useRouter } from 'next/router';
+import { tableCellClasses } from '@mui/material/TableCell';
 import { useEffect } from "react";
+import { styled } from '@mui/material/styles';
 import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle';
 
 import React, { useState } from "react";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
 
 export default function ProductList( {  backToProductList } ){
 
@@ -75,27 +97,27 @@ export default function ProductList( {  backToProductList } ){
                  <TableContainer >
                  <Table sx={{tableLayout: 'fixed'}}>
                    <TableHead>
-                     <TableRow>
-                       <TableCell align="left">Product ID</TableCell>
-                       <TableCell align="left">Name</TableCell>
-                       <TableCell align="left">Category ID</TableCell>
-                       <TableCell align="left">Price</TableCell>
-                       <TableCell align="left">Stock</TableCell>
+                        <TableRow>
+                            <StyledTableCell align="left">Product ID</StyledTableCell>
+                            <StyledTableCell align="left">Name</StyledTableCell>
+                            <StyledTableCell align="left">Category ID</StyledTableCell>
+                            <StyledTableCell align="left">Price</StyledTableCell>
+                            <StyledTableCell align="left">Stock</StyledTableCell>
 
-                       {/* Add more table headers if needed */}
-                     </TableRow>
+                        {/* Add more table headers if needed */}
+                        </TableRow>
                    </TableHead>
                    <TableBody>
                      {/* Use slice to paginate the items array */}
                      {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(data => (
-                        // <TableRow key={data.product_id} onClick={() => console.log(`Clicked row ${data.product_id}`)}>
-                        <TableRow key={data.product_id} onClick={handleClick(data)}>
-                            <TableCell align="left">{data.product_id}</TableCell>
-                            <TableCell align="left">{data.name}</TableCell>
-                            <TableCell align="left">{data.category_id}</TableCell>
-                            <TableCell align="left">{data.price}</TableCell>
-                            <TableCell align="left">{data.stock}</TableCell>
-                        </TableRow>
+                     
+                        <StyledTableRow key={data.product_id} onClick={handleClick(data)}>
+                            <StyledTableCell align="left">{data.product_id}</StyledTableCell>
+                            <StyledTableCell align="left">{data.name}</StyledTableCell>
+                            <StyledTableCell align="left">{data.category_id}</StyledTableCell>
+                            <StyledTableCell align="left">{data.price}</StyledTableCell>
+                            <StyledTableCell align="left">{data.stock}</StyledTableCell>
+                        </StyledTableRow>
                      ))}
                    </TableBody>
                  </Table>

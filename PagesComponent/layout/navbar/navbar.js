@@ -20,6 +20,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Button from '@mui/material/Button';
 
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import RoomIcon from '@mui/icons-material/Room';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
@@ -48,29 +55,33 @@ function ResponsiveDrawer(props) {
         <ProfilePic></ProfilePic>
         <Divider>App</Divider>
         <List>
-            {["Orders", "Inventory", "Profile", "Tracking Status"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-                <ListItemButton 
-                  onClick={() => {
-                    clickSiteLink(text);
-                  }}>
-                  <ListItemText primary={text} sx={{pl: 4}}/>                
-                </ListItemButton>
-            </ListItem>
-            ))}
+            <ListItemButton onClick={() => {clickSiteLink("Orders");}}>
+                <ListAltIcon/>
+                <ListItemText primary={"Orders"} sx={{pl: 2}}/>  
+            </ListItemButton>
+            <ListItemButton onClick={() => {clickSiteLink("Inventory");}}>
+                <InventoryIcon/>
+                <ListItemText primary={"Inventory"} sx={{pl: 2}}/>  
+            </ListItemButton>
+            <ListItemButton onClick={() => {clickSiteLink("Profile");}}>
+                <AccountBoxIcon/>
+                <ListItemText primary={"Profile"} sx={{pl: 2}}/>  
+            </ListItemButton>
+            <ListItemButton onClick={() => {clickSiteLink("Tracking Status");}}>
+                <RoomIcon/>
+                <ListItemText primary={"Tracking Status"} sx={{pl: 2}}/>  
+            </ListItemButton>
         </List>
         <Divider>Settings</Divider>
         <List>
-            {["Settings", "Contact Us"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    clickSiteLink(text);
-                  }}>
-                    <ListItemText primary={text} sx={{pl: 4}}/>
-                </ListItemButton>
-            </ListItem>
-            ))}
+            <ListItemButton onClick={() => {clickSiteLink("Settings");}}>
+                <SettingsIcon/>
+                <ListItemText primary={"Settings"} sx={{pl: 2}}/>  
+            </ListItemButton>
+            <ListItemButton onClick={() => {clickSiteLink("Contact Us");}}>
+                <ContactPhoneIcon/>
+                <ListItemText primary={"Contact Us"} sx={{pl: 2}}/>  
+            </ListItemButton>
         </List>
     </div>
   );
