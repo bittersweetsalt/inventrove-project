@@ -6,8 +6,7 @@ import { useEffect } from "react";
 import { ThemeProvider, createTheme } from '@mui/system';
 import React, { useState } from "react";
 import Timer from "../../../PagesComponent/timer/timer";
-import ImageProductBlobCarousel from "../ProductInfo/imageCarousel";
-import ImageController from "./imageControl/imageController";
+import ImageCard from "./imageControl/imageComponent";
 
 export default function ProductEdit({ itemQuery }){
 
@@ -19,30 +18,27 @@ export default function ProductEdit({ itemQuery }){
     const [isLoading, setIsLoading] = useState(false);
 
     const [blobUrls, setBlobUrls] = useState([]);
-
+    
     const [postData, setPostData] = useState({});
 
-    const [formInputData, setFormData] = useState({
-        name: '',
-        description: '',
-        category_id: '',
-        price: '',      
-        stock: '',
-        image_path: ''
-    });
-
-        // File Uploader
+    // File Uploader
     const [selectedFile, setSelectedFiles] = useState([]);
+
+    const [postReady, setPostReady] = useState(false);
 
 
     const handleFileChange = (event) => {
-        // setSelectedFile([...selectedFile, event.target.files[0]]);
         if (event.target.files) {
             // Create an array from the file list
             const fileArray = Array.from(event.target.files);
-            console.log(event.target.files[0])
-            // Update the state to include the new files
-            setSelectedFiles(prevFiles => [...prevFiles, ...fileArray]);
+
+            const blobUrls = fileArray.map(file => {
+                const blob = new Blob([file], { type: file.type });
+                
+                return {blob, file}
+            });
+            
+            setBlobUrls(prevUrls => [...prevUrls, ...blobUrls])
         }
     };
 
@@ -60,8 +56,8 @@ export default function ProductEdit({ itemQuery }){
                 [e.target.name]: false,
             });
         }
-        setFormData({
-            ...formInputData,
+        setPostData({
+            ...postData,
             [e.target.name]: e.target.value 
         });
     };
@@ -80,8 +76,8 @@ export default function ProductEdit({ itemQuery }){
                 [e.target.name]: false,
             });
         }
-        setFormData({
-            ...formInputData,
+        setPostData({
+            ...postData,
             [e.target.name]: e.target.value 
         });
       };
@@ -99,28 +95,185 @@ export default function ProductEdit({ itemQuery }){
     };
 
     const handleDropDown = (e) =>{
-        setFormData({
-            ...formInputData,
+        setPostData({
+            ...postData,
             [e.target.name]: e.target.value 
         });
     };
 
-    const handleInputChange = (event) => {
-        console.log(productData);
-    }
-
     const handleBack = () =>{
-        router.push({pathname: `/Inventory`});
-    }
-    
-   
-    const backToProductList = () =>{
         blobUrls.forEach(blobUrl => {
             URL.revokeObjectURL(blobUrl);
         });
-        router.push("/Inventory")
+        router.push({pathname: `/Inventory`});
     }
 
+    useEffect(() => {
+        const query_payload = {
+            query_id: product_id
+        }
+       
+        const fetchInfoData = async () => {
+            try {
+                const response = await fetch('/api/product/product_query', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(query_payload)
+                });
+                const data = await response.json();
+                setPostData(data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchInfoData();
+    }, []);
+
+    useEffect(() =>{
+        const query_payload = {
+            query_id: product_id,
+            minio_image_path: minio_image_path
+        }
+        const fetchImageData = async () => {
+            try {
+                const initialResponse  = await fetch('/api/minio/query/imageQuery', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(query_payload)
+                });
+                const minioImageList  = await initialResponse.json();
+
+                try{
+                    const promises = minioImageList.map(async (item) => {
+                        const response = await fetch(`/api/minio/query/minioImageQuery`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(item)
+                        });
+                        // console.log(response.headers)
+                        const headers = {};
+                        response.headers.forEach((value, key) => {
+                            headers[key] = value;
+                        });
+                        const blob = await response.blob();
+
+                        // return response.blob();
+                        return { headers, blob }
+                    });
+                    
+                    // Wait for all promises to resolve
+                    const responses = await Promise.all(promises);
+
+                    // Resolve all blobs and adding them into blobUrls hook
+                    const blobsWithHeaders = responses.map(response => ({
+                        blob: new Blob([response.blob], { type: 'image/jpeg' }),
+                        headers: response.headers
+                    }));
+                    setBlobUrls(blobsWithHeaders)
+                } catch (error) {
+                console.error('An error occurred:', error);
+                }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchImageData();
+    }, [])
+
+    const handleEditEntrySubmit = async (event) => {
+        event.preventDefault();
+        
+        for (const value in errors) {
+            if(errors[value] == true){
+                setPostReady(false);
+                setErrorResponseText("Error: Status - An input is not allowed. Please try again");
+                handleErrorResponseOpen();
+            }
+            if(errors[value] == false){
+                setPostReady(true);
+            }
+        }
+        if(postReady){
+            if (!selectedFile) return;
+
+            try {
+                // const formData = new FormData();
+                // selectedFile.forEach((imageFile) => {
+                //   formData.append(`images`, imageFile);
+                // });
+                
+                // const response = await fetch('/api/minio/upload/editProductEntry', {
+                //   method: 'POST',
+                //   body: formData,
+                // });
+              
+                // if (!response.ok) {
+                //   throw new Error('Minio Network response was not ok');
+                // }
+              
+                // const data = await response.json();
+                
+                // setPostData({
+                //   ...postData,
+                //   image_path: data.productNumber,
+                // });
+              
+                const insert_payload = {
+                    product_id: product_id,
+                    name: postData.name,
+                    description: postData.description,
+                    category_id: parseInt(postData.category_id),
+                    price: parseInt(postData.price),
+                    stock: parseInt(postData.stock),
+                };
+              
+                const response_postresql = await fetch('/api/inventory/update', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(insert_payload),
+                });
+              
+                await response_postresql.json();
+                if (response_postresql.status === 200) {
+                  console.log('Item Created successfully');
+                  // set the success page
+                //   handleSubmissionResponseOpen();
+                //   backToProductList();
+                } else {
+                  console.error('Failed to create Item');
+                //   handleErrorResponseOpen();
+                //   setErrorResponseText("Error: Status " + response_postresql.status + " - " + response_postresql.statusText);
+                }
+            } catch (error) {
+                console.error('An error occurred:', error);
+                // Handle the error as needed (e.g., show an error message to the user)
+            }
+        }       
+    };
+
+    const removeImageBlob = (e, imageUrl) =>{
+        console.log(imageUrl)
+        blobUrls.forEach(blobUrl => {
+            if (imageUrl === blobUrl){
+                URL.revokeObjectURL(blobUrl);
+            }
+        });
+        const newBlobUrl = blobUrls.filter(item => item !== imageUrl)
+        setBlobUrls(newBlobUrl)
+        console.log(blobUrls)
+    }
 
     return (
 
@@ -149,8 +302,31 @@ export default function ProductEdit({ itemQuery }){
                                 xs={12} sm={8} md={8}
                             >
                                 <Box>
-                                    <ImageController product_id={product_id} minio_image_path={minio_image_path}></ImageController>
-                                </Box>      
+                                    {/* <ImageController product_id={product_id} minio_image_path={minio_image_path}></ImageController> */}
+                                    <Card>
+                                        {
+                                        isLoading ? (
+                                            <div></div>
+                                        ): (
+                                        <Grid container spacing={2} justifyContent="center" alignItems="center" >
+                                            <Grid item >
+                                                {blobUrls ?
+                                                    <ImageList rowHeight={200}>
+                                                        {blobUrls.map((url, index) => (
+                                                            <ImageListItem key={index} sx={{border: '1px solid lightgrey', borderRadius: 1}}>
+                                                                <ImageCard imageUrl={url} removeImageBlob={removeImageBlob} />
+                                                            </ImageListItem>
+                                                        ))}
+                                                    </ImageList>: <div>
+                                                        Loading Images
+                                                    </div>
+                                                }
+                                            </Grid>
+                                        </Grid>
+                                        )}
+                                    </Card>
+                                </Box>
+                                
                                 <Box
                                     elevation={0}
                                     sx={{
@@ -171,7 +347,7 @@ export default function ProductEdit({ itemQuery }){
                                     {selectedFile && selectedFile.length > 0 ? (
                                         selectedFile.map((file, index) => (
                                         <Typography key={index}>
-                                            {file.name}
+                                            {/* <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100px', height: '100px' }} /> */}
                                         </Typography>
                                         ))
                                     ) : (
@@ -179,7 +355,6 @@ export default function ProductEdit({ itemQuery }){
                                     )}
                                         <form >
                                             <input type="file" multiple onChange={handleFileChange} />
-                                            <button type="submit">Upload</button>
                                         </form>     
                                 </Box> 
                             </Grid>
@@ -203,11 +378,14 @@ export default function ProductEdit({ itemQuery }){
                                                 id="outlined-required"
                                                 name="name"
                                                 label="Name"
-                                                value={formInputData.name}
+                                                value={postData.name || ""}
                                                 onChange={handleStringVali_Insert}
                                                 error={errors.name} 
                                                 required
                                                 fullWidth
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                  }}
                                             />
                                         </Grid>
 
@@ -223,8 +401,8 @@ export default function ProductEdit({ itemQuery }){
                                                         labelId="demo-simple-select-label"
                                                         id="demo-simple-select"
                                                         name="category_id"
-                                                        value={formInputData.category_id}
                                                         required
+                                                        value={postData.category_id || ""}
                                                         label="Category ID"
                                                         onChange={handleDropDown}
                                                         >
@@ -243,13 +421,16 @@ export default function ProductEdit({ itemQuery }){
                                                 id="outlined-required"
                                                 name="description"
                                                 label="Description"
-                                                value={formInputData.description}
+                                                value={postData.description || ""}
                                                 onChange={handleStringVali_Insert}
                                                 multiline
                                                 rows={4}
                                                 error={errors.description} 
                                                 required
                                                 fullWidth
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
                                             />
                                         </Grid>
                                         <Grid
@@ -260,11 +441,14 @@ export default function ProductEdit({ itemQuery }){
                                                 id="outlined-required"
                                                 name="price"
                                                 label="Price"
-                                                value={formInputData.price}
+                                                value={postData.price || ""}
                                                 onChange={handleNumberVali_Insert}
                                                 error={errors.price} 
                                                 required
                                                 fullWidth
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                  }}
                                             />
                                         </Grid>
                                         <Grid
@@ -275,22 +459,15 @@ export default function ProductEdit({ itemQuery }){
                                                 id="outlined-required"
                                                 name="stock"
                                                 label="Stock"
-                                                value={formInputData.stock}
+                                                value={postData.stock || ""}
                                                 onChange={handleNumberVali_Insert}
                                                 error={errors.stock} 
                                                 required
                                                 fullWidth
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                  }}
                                             />
-                                        </Grid>
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            container
-                                            justifyContent="flex-end"
-                                            spacing={2}
-                                        >
-
-                                            
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -300,7 +477,7 @@ export default function ProductEdit({ itemQuery }){
                         <Grid
                             item
                         >
-                            <Button variant="contained" color="primary">
+                            <Button onClick={handleEditEntrySubmit} variant="contained" color="primary">
                                 Update
                             </Button>
                         </Grid>

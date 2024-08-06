@@ -33,8 +33,8 @@ const ImageCard = ({ imageUrl, removeImageBlob }) => {
         <CardMedia
             component="img"
             height="200"
-            image={imageUrl}
-            alt="Contemplative Reptile"
+            image={URL.createObjectURL(imageUrl.blob)}
+            alt="Image Set"
         />
         {isImageHovered && (
             <CardActions style={{ position: 'absolute', top: '10px', right: '10px' }} >

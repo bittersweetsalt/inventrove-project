@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 import ImageCard from "./imageComponent";
 
-export default function ImageController({ product_id, minio_image_path }){
-
+export default function ImageController({ product_id, minio_image_path, blobUrl }){
     const [remove_status, setRemoveStatus] = useState(false);
     const [removed_list, setRemoveList] = useState({});
     
-    const [blobUrls, setBlobUrls] = useState([]);
-
+    const [blobUrls, setBlobUrls] = useState(blobUrl);
     const [postData, setPostData] = useState({});
 
     const [isLoading, setIsLoading] = useState(false);
