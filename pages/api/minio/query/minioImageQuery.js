@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         const buffer = await streamToBuffer(object);
         // Send the buffer as a blob
         res.setHeader('Content-Type', 'image/jpeg');
-        res.setHeader('Item-Name', req.body);
+        res.setHeader('name', req.body);
         // res.send(buffer);
         res.send(buffer);
       } catch (err) {

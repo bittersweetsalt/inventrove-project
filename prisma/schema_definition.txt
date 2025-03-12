@@ -37,3 +37,18 @@ model Transaction {
   transaction_type String
   transaction_date DateTime @default(now())
 }
+
+model User {
+  id         Int      @id @default(autoincrement())     // Unique identifier
+  email      String   @unique                          // User's email (unique)
+  password   String                                    // Hashed password
+  firstName  String                                    // User's first name
+  lastName   String                                    // User's last name
+  position   String                                    // Job title/position
+  department String                                    // Department the user works in
+  phone      String?                                   // Optional contact phone number
+  hireDate   DateTime?                                 // Date of hire (optional)
+  status     String   @default("active")               // Employment status (default: 'active')
+  createdAt  DateTime @default(now())                  // Record creation timestamp
+  updatedAt  DateTime @updatedAt                       // Automatically updated timestamp
+}

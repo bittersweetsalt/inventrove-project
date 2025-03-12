@@ -1,7 +1,7 @@
 import { Card, Box, Typography, Grid, ImageList, ImageListItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
-import ImageCard from "./imageComponent";
+// import ImageCard from "./imageCard";
 
 export default function ImageController({ product_id, minio_image_path, blobUrl }){
     const [remove_status, setRemoveStatus] = useState(false);
@@ -106,7 +106,7 @@ export default function ImageController({ product_id, minio_image_path, blobUrl 
                         <ImageList rowHeight={200}>
                             {blobUrls.map((url, index) => (
                                 <ImageListItem key={index} sx={{border: '1px solid lightgrey', borderRadius: 1}}>
-                                    <ImageCard imageUrl={url} removeImageBlob={removeImageBlob} />
+                                    {/* <ImageCard imageUrl={url} removeImageBlob={removeImageBlob} /> */}
                                 </ImageListItem>
                             ))}
                         </ImageList>: <div>

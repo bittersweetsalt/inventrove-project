@@ -130,3 +130,19 @@ model transactions {
   transaction_date DateTime @default(now())
   amount           Float
 }
+
+model users {
+  id         Int      @id @default(autoincrement()) // Equivalent to SERIAL PRIMARY KEY
+  email      String   @unique                      // Unique email address, VARCHAR(255) in SQL
+  password   String                                // Hashed password, VARCHAR(255) in SQL
+  first_name  String                                // First name, VARCHAR(100) in SQL
+  last_name   String                                // Last name, VARCHAR(100) in SQL
+  position   String                                // Job title, VARCHAR(100) in SQL
+  department String                                // Department, VARCHAR(100) in SQL
+  phone      String?                               // Contact phone number, VARCHAR(15) in SQL (optional)
+  hire_date   DateTime?                             // Hire date, DATE in SQL (optional)
+  status     String   @default("active")           // Employment status, VARCHAR(20) in SQL with default value
+  created_at  DateTime @default(now())              // Record creation timestamp, TIMESTAMP in SQL
+
+  @@map("users")                                   // Map Prisma model to 'users' table in PostgreSQL
+}

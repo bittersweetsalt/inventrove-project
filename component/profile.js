@@ -9,31 +9,36 @@ function ProfilePic(props) {
         <Grid
             container
             spacing={0}
-            direction="column"
+            direction="row"
             alignItems="center"
             justifyContent="center"
+            sx={{pb: 6}}
             // sx={{ minHeight: '100vh' }}
             >
 
             {/* Profile Pic */}
 
-            <Grid item xs={0}>
+            <Grid item xs={0}  sx={{pr: 2, pl: 2}}>
                 <Box
                     component="img"
                     sx={{
                         borderRadius: 45,
-                        height: 100,
-                        width: 100,
+                        height: 80,
+                        width: 80,
                         maxHeight: { xs: 233, md: 167 },
                         maxWidth: { xs: 350, md: 250 },
                     }}
                     alt="Profile Pictures."
                     src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
-                    />
+                />
             </Grid>
-            <Grid item xs={3} sx={{pb: 5}}>
+            <Grid item >
+
                 <Typography variant="body1">
-                    Nathan Fielding
+                    Nathan Chang
+                </Typography>
+                <Typography variant="body2">
+                    Administrator
                 </Typography>
             </Grid>
         </Grid>

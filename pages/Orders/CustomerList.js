@@ -1,25 +1,44 @@
-import { Paper, Box, Card, Grid, List, ListItem, ListItemText, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
-import StickyHeadTable from "../../PagesComponent/tablelist";
-import Layout from "../../PagesComponent/layout";
+import { Paper, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Button, Grid } from "@mui/material";
 import { useRouter } from 'next/router';
-import OrderList from "../../PagesComponent/orderList";
-import { useEffect } from "react";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useEffect, useState } from "react";
+import { tableCellClasses } from '@mui/material/TableCell';
+import { styled } from '@mui/material/styles';
 
-import React, { useState } from "react";
+// Custom colors for the color scheme
+const headerColor = "#61d2ff"; // Banner color (header color)
+const hoverColor = "#a8e4ff"; // Hover color
+const highlightColor = "#b2dfdb"; // Highlight color (e.g., light teal)
+const textColor = "#013247"; // Text color for headers
 
-export default function CustomerList(){
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: headerColor, // Banner color
+        color: textColor, // Text color for headers
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    // Add hover effect
+    '&:hover': {
+        backgroundColor: hoverColor, // Hover color
+        cursor: "pointer", // Change cursor to pointer on hover
+    },
+    // Highlight selected row
+    '&.Mui-selected': {
+        backgroundColor: highlightColor, // Highlight color (light teal)
+    },
+}));
+
+export default function CustomerList() {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    const [anchorEl, setAnchorEl] = useState(null);
-
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState(''); // State for search query
+    const [selectedRow, setSelectedRow] = useState(null); // State for selected row
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,9 +48,7 @@ export default function CustomerList(){
             try {
                 const response = await fetch('/api/orders/customer_list');
                 const data = await response.json();
-                
                 setData(data);
-                console.log(data);
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -42,58 +59,109 @@ export default function CustomerList(){
         fetchData();
     }, []);
 
-    const handleCellClick = (row) =>{
-        console.log("This is clicked");
-        // console.log(row);
-        // const router = useRouter();
-    }   
+    // Filter rows based on search query
+    const filteredRows = data
+        ? data.filter((row) =>
+              row.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              row.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              row.phone_number.includes(searchQuery) ||
+              row.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              row.shipping_address.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : [];
 
-    const handleClick = (row) => {
-        // console.log(row);
-        router.query.N
-        router.push({ pathname: `/Orders/customers/${row.transaction_id}`, query: row});
+    // Handle row selection
+    const handleRowSelect = (row) => {
+        setSelectedRow(row);
+    };
+
+    // Handle "Detail" button click
+    const handleDetailClick = () => {
+        router.push({ pathname: `/orders/customers/${selectedRow.customer_id}` });
     };
 
     return (
-        <Paper>
-            {/* <OrderList data={data}></OrderList> */}
-            {/* <Button onClick={fetchData} disabled={isLoading}> */}
-                {/* {isLoading ? "Loading..." : "Fetch Data"} */}
-            {/* </Button> */}
+        <Paper sx={{ p: 2 }}>
             {isLoading ? "Loading..." : ""}
             {error && <Box style={{ color: "red" }}>{error}</Box>}
-            {data && 
+
+            {/* Search Bar */}
+            <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search customers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ marginBottom: 2 }}
+            />
+
+            {data && (
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Phone Number</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Shipping Address</TableCell>
+                                <StyledTableCell>Name</StyledTableCell>
+                                <StyledTableCell>Phone Number</StyledTableCell>
+                                <StyledTableCell>Email</StyledTableCell>
+                                <StyledTableCell>Shipping Address</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data.map((row) => (
-                                <TableRow key={row.customer_id}>
-                                    <TableCell onClick={() => handleCellClick(row)}>{row.first_name} {row.last_name}</TableCell>
-                                    <TableCell onClick={() => handleCellClick(row)}>{row.phone_number}</TableCell>
-                                    <TableCell onClick={() => handleCellClick(row)}>{row.email}</TableCell>
-                                    <TableCell onClick={() => handleCellClick(row)}>{row.shipping_address}</TableCell>
-                                    <TableCell align="center">
-                                        <Button variant="contained" onClick={() => handleClick(row)}>
-                                            Details
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                                
+                            {filteredRows.map((row) => (
+                                <StyledTableRow
+                                    key={row.customer_id}
+                                    onClick={() => handleRowSelect(row)}
+                                    selected={selectedRow?.customer_id === row.customer_id} // Highlight selected row
+                                >
+                                    <StyledTableCell>{row.first_name} {row.last_name}</StyledTableCell>
+                                    <StyledTableCell>{row.phone_number}</StyledTableCell>
+                                    <StyledTableCell>{row.email}</StyledTableCell>
+                                    <StyledTableCell>{row.shipping_address}</StyledTableCell>
+                                </StyledTableRow>
                             ))}
-                           
                         </TableBody>
                     </Table>
                 </TableContainer>
-                }
-                 
+            )}
+
+            {/* Display Selected Row Details */}
+            {selectedRow && (
+                <Box sx={{ marginTop: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Selected Customer Details
+                    </Typography>
+                    <Paper elevation={3} sx={{ padding: 2 }}>
+                        <Grid container spacing={2}>
+                            {/* Customer Details */}
+                            <Grid item xs={12} sm={8}>
+                                <Typography variant="body1">
+                                    <strong>Name:</strong> {selectedRow.first_name} {selectedRow.last_name}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Phone Number:</strong> {selectedRow.phone_number}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Email:</strong> {selectedRow.email}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Shipping Address:</strong> {selectedRow.shipping_address}
+                                </Typography>
+                            </Grid>
+
+                            {/* "Detail" Button */}
+                            <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleDetailClick}
+                                >
+                                    Detail
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </Box>
+            )}
         </Paper>
     );
 }

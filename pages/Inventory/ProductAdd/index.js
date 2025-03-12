@@ -4,9 +4,10 @@ import { useEffect } from "react";
 // import { createTheme } from "@mui/material/styles";
 import { ThemeProvider, createTheme } from '@mui/system';
 import React, { useState } from "react";
-import Timer from "../../../PagesComponent/timer/timer";
+import Timer from "../../../component/timer/timer";
+import Layout from "../../../component/layout";
 
-export default function ProductAdd( {backToProductList} ){
+export default function ProductAdd( {backProductList} ){
 
     const router = useRouter();
 
@@ -40,7 +41,7 @@ export default function ProductAdd( {backToProductList} ){
             setSelectedFiles(prevFiles => [...prevFiles, ...fileArray]);
         }
     };
-
+    console.log(selectedFile)
     const handleNewEntrySubmit = async (event) => {
         event.preventDefault();
         
@@ -202,7 +203,13 @@ export default function ProductAdd( {backToProductList} ){
         return test_results
     };
 
+    const handleBack = () =>{
+        router.push({pathname: `/inventory`});
+    }
+
+
     return (
+        <Layout>
         <Grid  
             container
             justifyContent="center"
@@ -379,7 +386,7 @@ export default function ProductAdd( {backToProductList} ){
                                 <Grid
                                     item
                                 >
-                                    <Button onClick={backToProductList} variant="outlined" color="primary">
+                                    <Button onClick={handleBack} variant="outlined" color="primary">
                                         Back
                                     </Button>
                                 </Grid>
@@ -445,7 +452,7 @@ export default function ProductAdd( {backToProductList} ){
                                     {"Product Successfully Created"}
                                 </DialogTitle>
                                 <DialogContent>
-                                    <Timer propFunctions={backToProductList} message={"Page will redirect itself to the previous page in "}></Timer>
+                                    <Timer backToProductList={backProductList} message={"Page will redirect itself to the previous page in "}></Timer>
                                 </DialogContent>
                             </Dialog>
                         ) : (
@@ -455,5 +462,6 @@ export default function ProductAdd( {backToProductList} ){
                 </Card>
             </Grid>
         </Grid>
+        </Layout>
     );
 }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 
-const Timer = ({propFunctions, message}) => {
-  const [seconds, setSeconds] = useState(5);  // Initialize the seconds state to 0
+const Timer = ({route, handleBack}) => {
+  const [seconds, setSeconds] = useState(3);  // Initialize the seconds state to 0
   const [isActive, setIsActive] = useState(true);  // Initialize the isActive state to false
 
   useEffect(() => {
@@ -14,16 +14,15 @@ const Timer = ({propFunctions, message}) => {
         }, 1000);
         if(seconds == 0){
             setIsActive(false);
-            propFunctions();
+            handleBack();
         }
     } 
     return () => clearInterval(interval);  // Clear the interval when the component unmounts or isActive/seconds changes
   }, [isActive, seconds]);  // The effect depends on isActive and seconds
 
-
   return (
     <div>
-      <Typography> {message} {seconds} </ Typography>
+      <Typography> This will reroute to the previous page in: {seconds} seconds</ Typography>
     </div>
   );
 };

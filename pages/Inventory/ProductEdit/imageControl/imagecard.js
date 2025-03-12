@@ -10,7 +10,6 @@ const ImageCard = ({ imageUrl, removeImageBlob }) => {
     const [isImageHovered, setIsImageHovered] = useState(false);
     const [isRemoveHovered, setIsRemovedHovered] = useState(false);
     const [isCardHovered, setIsCardHovered] = useState(false);
-
     function handleHover(index, isLeaving) {
         setIsRemovedHovered((prevItems) => {
           if (isLeaving) return prevItems.filter((item) => item !== index);
