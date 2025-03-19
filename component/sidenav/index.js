@@ -16,6 +16,10 @@ import {
     Settings as SettingsIcon,
     ChevronLeft as ChevronLeftIcon,
     Article as ArticleIcon,
+    AccountBox as ProfileIcon,
+    Inventory as InventoryIcon,
+    GpsFixed as TrackingIcon,
+
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
@@ -126,7 +130,7 @@ const SidebarNav = () => {
                             justifyContent: 'center',
                         }}
                     >
-                        <HomeIcon />
+                        <InventoryIcon />
                     </ListItemIcon>
                     {isExpanded && <ListItemText primary="Inventory" />}
                 </ListItem>
@@ -150,7 +154,7 @@ const SidebarNav = () => {
                             justifyContent: 'center',
                         }}
                     >
-                        <HomeIcon />
+                        <TrackingIcon />
                     </ListItemIcon>
                     {isExpanded && <ListItemText primary="Tracking Status" />}
                 </ListItem>
@@ -176,7 +180,7 @@ const SidebarNav = () => {
                             justifyContent: 'center',
                         }}
                     >
-                        <HomeIcon />
+                        <ProfileIcon />
                     </ListItemIcon>
                     {isExpanded && <ListItemText primary="Profile" />}
                 </ListItem>

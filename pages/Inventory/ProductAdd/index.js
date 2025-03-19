@@ -180,8 +180,6 @@ export default function ProductAdd( {backProductList} ){
         if (reason && reason === "backdropClick") 
             return;
         setSubmitSuccess(false);        
-
-        myCloseModal();
     };
 
     const handleDropDown = (e) =>{
@@ -193,7 +191,7 @@ export default function ProductAdd( {backProductList} ){
 
 
     const validateStrings = (value) => {
-        const strings = /^[a-zA-Z0-9_.-]+$/; // Allows letters, numbers, ., -, and _
+        const strings = /^[a-zA-Z0-9_.-\s]+$/; // Allows letters, numbers, ., -, and _
         return !strings.test(value);
     };
 
@@ -207,6 +205,18 @@ export default function ProductAdd( {backProductList} ){
         router.push({pathname: `/inventory`});
     }
 
+    useEffect(() => {
+        if (submitSuccess) {
+            // Set a timeout to redirect after 3 seconds (adjust as needed)
+            const timer = setTimeout(() => {
+                handleSubmissionResponseClose(); // Close the dialog
+                router.push('/inventory'); // Redirect to the inventory page
+            }, 3000); // 3000ms = 3 seconds
+
+            // Cleanup the timer if the component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [submitSuccess, handleSubmissionResponseClose, router]);
 
     return (
         <Layout>
@@ -451,9 +461,9 @@ export default function ProductAdd( {backProductList} ){
                                 <DialogTitle id="alert-dialog-title">
                                     {"Product Successfully Created"}
                                 </DialogTitle>
-                                <DialogContent>
-                                    <Timer backToProductList={backProductList} message={"Page will redirect itself to the previous page in "}></Timer>
-                                </DialogContent>
+                                {/* <DialogContent>
+                                    <Timer></Timer>
+                                </DialogContent> */}
                             </Dialog>
                         ) : (
                             <div></div>

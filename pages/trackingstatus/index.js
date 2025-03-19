@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField, styled, Paper } from '@mui/material';
-import Layout from '../component/layout';
+import Layout from '../../component/layout';
 
 const headerColor = "#61d2ff"; // Banner color (header color)
 const hoverColor = "#a8e4ff"; // Hover color

@@ -32,7 +32,7 @@ const ImageCard = ({ imageUrl, removeImageBlob }) => {
         <CardMedia
             component="img"
             height="200"
-            image={URL.createObjectURL(imageUrl.blob)}
+            // image={URL.createObjectURL(imageUrl.blob)}
             alt="Image Set"
         />
         {isImageHovered && (
@@ -41,7 +41,7 @@ const ImageCard = ({ imageUrl, removeImageBlob }) => {
                     style={isRemoveHovered ? { color: red[100] } : { color: red[700] }}
                     onMouseEnter={() => setIsRemovedHovered(true)}
                     onMouseLeave={() => setIsRemovedHovered(false)}
-                    onClick={(event) => removeImageBlob(event, imageUrl)}
+                    onClick={(  ) => removeImageBlob(event, imageUrl)}
                 />
             </CardActions>
         )}

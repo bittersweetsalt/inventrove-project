@@ -1,30 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import React, { useState, useEffect, useCallback } from "react";
+import { Typography } from "@mui/material";
+import { useRouter } from "next/router";
 
-const Timer = ({route, handleBack}) => {
-  const [seconds, setSeconds] = useState(3);  // Initialize the seconds state to 0
-  const [isActive, setIsActive] = useState(true);  // Initialize the isActive state to false
+const Timer = ({ duration = 3, targetRoute = "/inventory/productadd" }) => {
+    const router = useRouter();
+    const [seconds, setSeconds] = useState(duration);
 
-  useEffect(() => {
-    let interval = null;  // Declare an interval variable to hold the timer ID
-    if (isActive) {
-        // If the timer is active, set an interval to update the seconds state every second
-        interval = setInterval(() => {
-            setSeconds(prevSeconds => prevSeconds - 1);  // Update seconds using the previous state value
-        }, 1000);
-        if(seconds == 0){
-            setIsActive(false);
-            handleBack();
+    const redirect = useCallback(() => {
+        router.push(targetRoute); // Navigate when timer reaches 0
+    }, [router, targetRoute]);
+
+    useEffect(() => {
+        if (seconds <= 0) {
+            redirect();
+            return;
         }
-    } 
-    return () => clearInterval(interval);  // Clear the interval when the component unmounts or isActive/seconds changes
-  }, [isActive, seconds]);  // The effect depends on isActive and seconds
 
-  return (
-    <div>
-      <Typography> This will reroute to the previous page in: {seconds} seconds</ Typography>
-    </div>
-  );
+        const interval = setInterval(() => {
+            setSeconds((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [seconds, redirect]);
+
+    return (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <Typography variant="h5">Redirecting in {seconds} seconds...</Typography>
+        </div>
+    );
 };
 
 export default Timer;

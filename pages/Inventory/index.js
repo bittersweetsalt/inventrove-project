@@ -65,7 +65,7 @@ export default function Inventory({ initialData }) {
     const [searchQuery, setSearchQuery] = useState(""); // State for search query
     const [selectedRow, setSelectedRow] = useState(null); // State for selected row
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [deleteConfirm, setDeleteConfirm] = useState(false);
 
     // Function to handle "Add Item" button click
