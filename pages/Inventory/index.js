@@ -380,6 +380,7 @@ export default function Inventory({ initialData }) {
                     </Paper>
                 </Grid>
             </Grid>
+
         </Layout>
     );
 }

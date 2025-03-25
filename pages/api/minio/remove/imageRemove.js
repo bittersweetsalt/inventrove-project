@@ -13,8 +13,9 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             const parsed_data = JSON.parse(req.body);
             const removeList = [];
+            console.log(parsed_data);
             for (const item in parsed_data){
-                removeList.push({name: parsed_data[item].headers});
+                removeList.push({name: parsed_data[item]});
             }
             await minioClient.removeObjects('projectimages', removeList);
             res.status(200).json({ message: 'Objects removed successfully' });
