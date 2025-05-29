@@ -1,10 +1,10 @@
 import { Box, Button, Grid, Tabs, Tab, Typography, styled } from "@mui/material";
 import Layout from "../../component/layout";
-import TransactionList from "./transactionlist";
-import SellerList from "./sellerlist";
-import BuyerList from "./buyerlist";
-import CustomerList from "./customerlist";
-import OrderList from "./orderlist";
+import TransactionList from "./transactions";
+import SellerList from "./sellers";
+import BuyerList from "./buyers";
+import CustomerList from "./customers";
+import OrderList from "./orders";
 import { useState } from "react";
 
 const tabsConfig = [

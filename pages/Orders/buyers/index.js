@@ -1,4 +1,18 @@
-import { Paper, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Button, Grid } from "@mui/material";
+import { 
+  Paper, 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  TextField, 
+  Typography, 
+  Button, 
+  Grid,
+  TablePagination
+} from "@mui/material";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import { tableCellClasses } from '@mui/material/TableCell';
@@ -32,13 +46,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function CustomerList() {
+export default function BuyerList() {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
     const [selectedRow, setSelectedRow] = useState(null); // State for selected row
+    
+    // Pagination state
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,7 +64,7 @@ export default function CustomerList() {
             setError(null);
 
             try {
-                const response = await fetch('/api/orders/customer_list');
+                const response = await fetch('/api/orders/buyer_list');
                 const data = await response.json();
                 setData(data);
             } catch (error) {
@@ -62,13 +80,18 @@ export default function CustomerList() {
     // Filter rows based on search query
     const filteredRows = data
         ? data.filter((row) =>
-              row.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              row.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              row.phone_number.includes(searchQuery) ||
+              row.buyer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
               row.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              row.phone_number.includes(searchQuery) ||
               row.shipping_address.toLowerCase().includes(searchQuery.toLowerCase())
           )
         : [];
+
+    // Paginate the filtered rows
+    const paginatedRows = filteredRows.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
 
     // Handle row selection
     const handleRowSelect = (row) => {
@@ -77,7 +100,7 @@ export default function CustomerList() {
 
     // Handle "Detail" button click
     const handleDetailClick = () => {
-        router.push({ pathname: `/orders/customers/${selectedRow.customer_id}` });
+        router.push({ pathname: `/orders/buyers/${selectedRow.buyer_id}` });
     };
 
     return (
@@ -89,9 +112,12 @@ export default function CustomerList() {
             <TextField
                 fullWidth
                 variant="outlined"
-                placeholder="Search customers..."
+                placeholder="Search buyers..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(0); // Reset to first page when searching
+                }}
                 sx={{ marginBottom: 2 }}
             />
 
@@ -100,27 +126,44 @@ export default function CustomerList() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell>Name</StyledTableCell>
-                                <StyledTableCell>Phone Number</StyledTableCell>
+                                <StyledTableCell>Buyer's Name</StyledTableCell>
                                 <StyledTableCell>Email</StyledTableCell>
+                                <StyledTableCell>Phone Number</StyledTableCell>
                                 <StyledTableCell>Shipping Address</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredRows.map((row) => (
+                            {paginatedRows.map((row) => (
                                 <StyledTableRow
-                                    key={row.customer_id}
+                                    key={row.buyer_id}
                                     onClick={() => handleRowSelect(row)}
-                                    selected={selectedRow?.customer_id === row.customer_id} // Highlight selected row
+                                    selected={selectedRow?.buyer_id === row.buyer_id} // Highlight selected row
                                 >
-                                    <StyledTableCell>{row.first_name} {row.last_name}</StyledTableCell>
-                                    <StyledTableCell>{row.phone_number}</StyledTableCell>
+                                    <StyledTableCell>{row.buyer_name}</StyledTableCell>
                                     <StyledTableCell>{row.email}</StyledTableCell>
+                                    <StyledTableCell>{row.phone_number}</StyledTableCell>
                                     <StyledTableCell>{row.shipping_address}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
                     </Table>
+                    
+                    {/* TablePagination */}
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(event, newPage) => {
+                            setPage(newPage);
+                            setSelectedRow(null); // Clear selection when changing pages
+                        }}
+                        onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setPage(0); // Reset to first page when changing rows per page
+                        }}
+                    />
                 </TableContainer>
             )}
 
@@ -128,20 +171,20 @@ export default function CustomerList() {
             {selectedRow && (
                 <Box sx={{ marginTop: 3 }}>
                     <Typography variant="h6" gutterBottom>
-                        Selected Customer Details
+                        Selected Buyer Details
                     </Typography>
                     <Paper elevation={3} sx={{ padding: 2 }}>
                         <Grid container spacing={2}>
-                            {/* Customer Details */}
+                            {/* Buyer Details */}
                             <Grid item xs={12} sm={8}>
                                 <Typography variant="body1">
-                                    <strong>Name:</strong> {selectedRow.first_name} {selectedRow.last_name}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Phone Number:</strong> {selectedRow.phone_number}
+                                    <strong>Buyer Name:</strong> {selectedRow.buyer_name}
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong>Email:</strong> {selectedRow.email}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Phone Number:</strong> {selectedRow.phone_number}
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong>Shipping Address:</strong> {selectedRow.shipping_address}

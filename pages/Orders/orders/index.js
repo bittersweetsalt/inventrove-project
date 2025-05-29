@@ -1,4 +1,18 @@
-import { Paper, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Button, Grid } from "@mui/material";
+import { 
+  Paper, 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  TextField, 
+  Typography, 
+  Button, 
+  Grid,
+  TablePagination
+} from "@mui/material";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import { tableCellClasses } from '@mui/material/TableCell';
@@ -21,7 +35,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    // Remove alternating row colors
     // Add hover effect
     '&:hover': {
         backgroundColor: hoverColor, // Hover color
@@ -40,6 +53,10 @@ export default function OrderList() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
     const [selectedRow, setSelectedRow] = useState(null); // State for selected row
+    
+    // Pagination state
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -72,6 +89,12 @@ export default function OrderList() {
           )
         : [];
 
+    // Paginate the filtered rows
+    const paginatedRows = filteredRows.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
+
     // Handle row selection
     const handleRowSelect = (row) => {
         setSelectedRow(row);
@@ -93,7 +116,10 @@ export default function OrderList() {
                 variant="outlined"
                 placeholder="Search orders..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(0); // Reset to first page when searching
+                }}
                 sx={{ marginBottom: 2 }}
             />
 
@@ -110,7 +136,7 @@ export default function OrderList() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredRows.map((row) => (
+                            {paginatedRows.map((row) => (
                                 <StyledTableRow
                                     key={row.order_id}
                                     onClick={() => handleRowSelect(row)}
@@ -125,6 +151,23 @@ export default function OrderList() {
                             ))}
                         </TableBody>
                     </Table>
+                    
+                    {/* TablePagination */}
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(event, newPage) => {
+                            setPage(newPage);
+                            setSelectedRow(null); // Clear selection when changing pages
+                        }}
+                        onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setPage(0); // Reset to first page when changing rows per page
+                        }}
+                    />
                 </TableContainer>
             )}
 
