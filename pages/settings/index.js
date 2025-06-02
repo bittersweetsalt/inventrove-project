@@ -144,6 +144,13 @@ export default function SettingsPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                 />
+                <TextField
+                  fullWidth
+                  label="Full Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField

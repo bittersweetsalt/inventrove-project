@@ -1,10 +1,20 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
+import { useAuth } from '../../component/context/AuthContext';
+import { Box, Button, TextField, Typography, Container, Paper, Slide } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/router';
+import SplashScreen from '../../component/splashscreen';
 
-export default function Home() {
+// import { TextField, Button, Box, Typography, Modal } from "@mui/material";
+export default function Login() {
   const { login } = useAuth();
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const router = useRouter();
+  const [showSplash, setShowSplash] = useState(false);
+
+  
+    const [open, setOpen] = useState(false);
 
   const [formLoginData, setFormLoginData] = useState({
     email: '',
@@ -14,12 +24,12 @@ export default function Home() {
   const [formRegisterData, setFormRegisterData] = useState({
     email: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     position: '',
     department: '',
     phone: '',
-    hireDate: '',
+    hire_date: '',
   });
 
   const handleLoginSubmit = async (e) => {
@@ -35,15 +45,20 @@ export default function Home() {
     console.log(res);
 
     if (res.ok) {
-      const { token } = await res.json();
-      // Store token and user info in context
-      login({ token });
-      // Optionally redirect to a dashboard or another page
+    //   const { token } = await res.json();      
+        const res_obj= await res.json();
+        // console.log(res_obj);
+        localStorage.setItem('user_settings', JSON.stringify(res_obj.user_settings));
+        // Store token and user info in context
+        login(res_obj.token);
+        // Optionally redirect to a dashboard or another page
+        router.push('/orders');
     } else {
-      const error = await res.json();
-      alert(error.error);
+    const error = await res.json();   
+    alert(error.error);
     }
   };
+
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +72,7 @@ export default function Home() {
 
   const handleRegSubmit = async (e) => {
     e.preventDefault();
-    
+    console.log(formRegisterData)
     try {
       // Send form data to the register API using fetch
       const response = await fetch('/api/auth/register', {
@@ -83,61 +98,165 @@ export default function Home() {
     }
   };
 
+ useEffect(() => {
+    // Check if the user has visited before using localStorage
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      setShowSplash(true);
+      localStorage.setItem('hasVisited', 'true'); // Mark as visited
+    }
+  }, []);
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
 
 
-  return (
+  return (   
     <div>
-      <h1>Login</h1>
-      <form onSubmit={handleLoginSubmit}>
-        <div>
-            <label>Email:</label>
-            <input type="email" name="email" value={formLoginData.email} onChange={handleLoginChange} required />
-            </div>
-        <div>
-            <label>Password:</label>
-            <input type="password" name="password" value={formLoginData.password} onChange={handleLoginChange} required />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-
-      <div>
-        <h1>Register</h1>
-        <form onSubmit={handleRegSubmit}>
-            <div>
-            <label>Email:</label>
-            <input type="email" name="email" value={formRegisterData.email} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>Password:</label>
-            <input type="password" name="password" value={formRegisterData.password} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>First Name:</label>
-            <input type="text" name="firstName" value={formRegisterData.firstName} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>Last Name:</label>
-            <input type="text" name="lastName" value={formRegisterData.lastName} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>Position:</label>
-            <input type="text" name="position" value={formRegisterData.position} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>Department:</label>
-            <input type="text" name="department" value={formRegisterData.department} onChange={handleRegisterChange} required />
-            </div>
-            <div>
-            <label>Phone:</label>
-            <input type="text" name="phone" value={formRegisterData.phone} onChange={handleRegisterChange} />
-            </div>
-            <div>
-            <label>Hire Date:</label>
-            <input type="date" name="hireDate" value={formRegisterData.hireDate} onChange={handleRegisterChange} />
-            </div>
-            <button type="submit">Register</button>
+    {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
+<Container component="main" maxWidth="xs">
+<Paper elevation={3} sx={{ mt: 8, p: 4 }}>
+  <Typography variant="h4" align="center" gutterBottom>
+    {isLogin ? 'Login' : 'Register'}
+  </Typography>
+  <AnimatePresence mode="wait">
+    {isLogin ? (
+      <motion.div
+        key="login"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.3 }}
+      >
+        <form onSubmit={handleLoginSubmit}>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Email"
+            type="email"
+            name="email"
+            value={formLoginData.email}
+            onChange={handleLoginChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Password"
+            type="password"
+            name="password"
+            value={formLoginData.password}
+            onChange={handleLoginChange}
+            required
+          />
+          <Button fullWidth variant="contained" type="submit" sx={{ mt: 2 }}>
+            Login
+          </Button>
         </form>
-        </div>
-    </div>
+      </motion.div>
+    ) : (
+      <motion.div
+        key="register"
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -50 }}
+        transition={{ duration: 0.3 }}
+      >
+        <form onSubmit={handleRegSubmit}>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Email"
+            type="email"
+            name="email"
+            value={formRegisterData.email}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Password"
+            type="password"
+            name="password"
+            value={formRegisterData.password}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="First Name"
+            type="text"
+            name="first_name"
+            value={formRegisterData.first_name}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Last Name"
+            type="text"
+            name="last_name"
+            value={formRegisterData.last_name}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Position"
+            type="text"
+            name="position"
+            value={formRegisterData.position}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Department"
+            type="text"
+            name="department"
+            value={formRegisterData.department}
+            onChange={handleRegisterChange}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Phone"
+            type="text"
+            name="phone"
+            value={formRegisterData.phone}
+            onChange={handleRegisterChange}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Hire Date"
+            type="date"
+            name="hire_date"
+            value={formRegisterData.hire_date}
+            onChange={handleRegisterChange}
+            InputLabelProps={{ shrink: true }}
+          />
+          <Button fullWidth variant="contained" type="submit" sx={{ mt: 2 }}>
+            Register
+          </Button>
+        </form>
+      </motion.div>
+    )}
+  </AnimatePresence>
+  <Box textAlign="center" mt={2}>
+    <Button onClick={() => setIsLogin(!isLogin)}>
+      {isLogin ? 'Need to register? Click here' : 'Already have an account? Login'}
+    </Button>
+  </Box>
+</Paper>
+</Container>
+</div>
   );
 }

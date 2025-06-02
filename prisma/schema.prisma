@@ -143,6 +143,24 @@ model users {
   hire_date   DateTime?                             // Hire date, DATE in SQL (optional)
   status     String   @default("active")           // Employment status, VARCHAR(20) in SQL with default value
   created_at  DateTime @default(now())              // Record creation timestamp, TIMESTAMP in SQL
-
+  settings user_settings?
+  
   @@map("users")                                   // Map Prisma model to 'users' table in PostgreSQL
+}
+
+model user_settings {
+  id                        Int      @id @default(autoincrement())
+  user_id                   Int      @unique
+  user                      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  theme                     String   @default("light") @db.VarChar(20)
+  language                  String   @default("en") @db.VarChar(10)
+  receive_email_notifications Boolean @default(true)
+  receive_sms_notifications Boolean  @default(false)
+  timezone                  String   @default("UTC") @db.VarChar(50)
+  items_per_page            Int      @default(10)
+  created_at                DateTime @default(now()) @db.Timestamptz
+  updated_at                DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  @@index([user_id], name: "idx_user_settings_user_id")
+  @@map("user_settings")
 }
