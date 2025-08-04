@@ -49,8 +49,10 @@ export default function Login() {
         const res_obj= await res.json();
         // console.log(res_obj);
         localStorage.setItem('user_settings', JSON.stringify(res_obj.user_settings));
+        console.log(res_obj.user_settings.user_id)
         // Store token and user info in context
         login(res_obj.token);
+        document.cookie = `userId=${res_obj.user_settings.user_id}; path=/; max-age=2592000`; // 30 days
         // Optionally redirect to a dashboard or another page
         router.push('/orders');
     } else {

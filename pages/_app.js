@@ -1,6 +1,7 @@
 import { AuthProvider } from '../component/context/AuthContext';
 import * as React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+// import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '../lib/prisma/context/ThemeContext';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useEffect, useState, useMemo } from 'react';
 
@@ -11,17 +12,17 @@ function MyApp({ Component, pageProps }) {
     // console.log(user_settings)
     const [data, setData] = useState({ theme: 'light' }); // Initialize with default
 
-    const theme = useMemo(() => createTheme({
-    palette: {
-        mode: data.theme,
-    },
-    }), [data.theme]);
+    // const theme = useMemo(() => createTheme({
+    //     palette: {
+    //         mode: data.theme,
+    //     },
+    // }), [data.theme]);
 
     useEffect(() => {
-    const savedData = localStorage.getItem('user_settings');
-    if (savedData) {
-        setData(JSON.parse(savedData));
-    }
+        const savedData = localStorage.getItem('user_settings');
+        if (savedData) {
+            setData(JSON.parse(savedData));
+        }
     }, []);
 
     const saveData = (newData) => {
@@ -30,7 +31,8 @@ function MyApp({ Component, pageProps }) {
     };
 
     return (
-        <ThemeProvider theme={theme}>
+        // <ThemeProvider theme={theme}>
+        <ThemeProvider>
             <AuthProvider>
                 <CssBaseline />
                 <Component {...pageProps} />

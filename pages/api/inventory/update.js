@@ -9,13 +9,13 @@ export default async function handler(req, res) {
         try {
             const updatedPost = await prisma.products.update({
                 where: { product_id: Number(product_id) },
-                data: {  
-                    name: name,
-                    description: description,
-                    category_id: category_id,
-                    price: price,
-                    stock: stock,
-                },
+                    data: {  
+                        name: name,
+                        description: description,
+                        category_id: category_id,
+                        price: price,
+                        stock: stock,
+                    },
                 });
             res.status(200).json(updatedPost);
         } catch (error) {
